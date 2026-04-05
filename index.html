@@ -310,6 +310,11 @@
             mainHours.innerText = String(hours).padStart(2, '0');
             mainMins.innerText = String(minutes).padStart(2, '0');
             mainSecs.innerText = String(seconds).padStart(2, '0');
+            
+            // Dynamic Colors for seconds
+            const secColors = ['#f43f5e', '#3b82f6', '#10b981', '#f59e0b', '#a855f7', '#06b6d4'];
+            mainSecs.style.color = secColors[seconds % secColors.length];
+            mainSecs.style.transition = 'color 0.4s ease-in-out';
 
             if (past) {
                 statusLabel.innerText = `TIME ELAPSED (D+${days})`;
