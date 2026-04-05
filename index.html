@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>D-Day Counter Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css" id="flatpickr-dark-theme" disabled>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
+<script id="tailwind-config">
+tailwind.config = {
+darkMode: "class",
+theme: {
+extend: {
+colors: {
+"primary": "#1152d4",
+"background-light": "#f6f6f8",
+"background-dark": "#101622",
+"charcoal": "#1a1a1a",
+},
+fontFamily: {
+"display": ["Manrope", "sans-serif"]
+},
+borderRadius: {
+"DEFAULT": "0.25rem",
+"lg": "0.5rem",
+"xl": "0.75rem",
+"full": "9999px"
+},
+},
+},
+}
+</script>
+<style>
+body {
+font-family: 'Manrope', sans-serif;
+}
+.deskterior-shadow {
+box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.08);
+}
+.counter-card {
+background-color: #1a1a1a;
+color: #ffffff;
+}
+.dark .counter-card {
+background-color: #1a1a1a;
+border-color: rgba(255,255,255,0.1);
+}
+.light .counter-card {
+background-color: #ffffff;
+color: #1a1a1a;
+border-color: rgba(0,0,0,0.1);
+}
+.light .counter-card .text-primary {
+color: #1152d4;
+}
+</style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-200 min-h-screen font-display transition-colors duration-300">
+
+<!-- Background Pattern/Decoration -->
+<div class="fixed inset-0 pointer-events-none opacity-50 dark:opacity-20 overflow-hidden">
+<div class="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+<div class="absolute top-1/2 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+</div>
+
+<!-- Main Container -->
+<div class="relative min-h-screen flex flex-col items-center justify-center p-6 sm:p-12 lg:p-24 overflow-y-auto">
+<div class="w-full max-w-3xl space-y-12 my-auto">
+<div class="text-center space-y-4">
+<h1 class="text-xs uppercase tracking-[0.3em] font-bold text-primary dark:text-primary/80" id="status-label">D-Day Counter</h1>
+<h2 class="text-3xl md:text-4xl font-extrabold text-charcoal dark:text-white" id="current-event-title">No Events Set</h2>
+</div>
+
+<!-- Modern Input Group -->
+<form id="dday-form" class="bg-white dark:bg-slate-900/50 p-2 rounded-xl deskterior-shadow border border-slate-200/50 dark:border-slate-800/50 flex flex-col md:flex-row gap-2">
+<div class="flex-1 flex items-center px-4">
+<span class="material-icons text-slate-400 mr-3 text-lg">edit</span>
+<input id="event-name" required class="w-full bg-transparent border-none focus:ring-0 text-slate-700 dark:text-slate-200 font-medium py-3 outline-none" placeholder="Event Name" type="text" autocomplete="off"/>
+</div>
+<div class="h-10 w-px bg-slate-200 dark:bg-slate-700 hidden md:block my-auto"></div>
+<div class="flex-1 flex items-center px-4">
+<span class="material-icons text-slate-400 mr-3 text-lg cursor-pointer" onclick="document.getElementById('event-datetime')._flatpickr.open()">calendar_today</span>
+<input id="event-datetime" required class="w-full bg-transparent border-none focus:ring-0 text-slate-700 dark:text-slate-200 font-medium py-3 outline-none cursor-pointer" placeholder="Select Date & Time" type="text"/>
+</div>
+<button type="submit" class="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2 group shadow-lg shadow-primary/20">
+<span>SET</span>
+<span class="material-icons text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</form>
+
+<!-- Counter Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+<!-- Days (Hero) -->
+<div class="counter-card col-span-2 md:col-span-1 md:row-span-1 rounded-xl p-8 flex flex-col items-center justify-center deskterior-shadow border dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white bg-white text-charcoal">
+<span id="main-days" class="text-7xl md:text-8xl font-black tracking-tighter mb-2">00</span>
+<span class="text-[10px] uppercase tracking-[0.4em] font-extrabold text-primary">Days</span>
+</div>
+<!-- Hours -->
+<div class="counter-card rounded-xl p-6 flex flex-col items-center justify-center deskterior-shadow border dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white bg-white text-charcoal">
+<span id="main-hours" class="text-4xl md:text-5xl font-bold mb-2">00</span>
+<span class="text-[10px] uppercase tracking-[0.4em] font-semibold text-slate-400">Hours</span>
+</div>
+<!-- Minutes -->
+<div class="counter-card rounded-xl p-6 flex flex-col items-center justify-center deskterior-shadow border dark:border-white/10 dark:bg-[#1a1a1a] dark:text-white bg-white text-charcoal">
+<span id="main-mins" class="text-4xl md:text-5xl font-bold mb-2">00</span>
+<span class="text-[10px] uppercase tracking-[0.4em] font-semibold text-slate-400">Minutes</span>
+</div>
+<!-- Seconds -->
+<div class="counter-card rounded-xl p-6 flex flex-col items-center justify-center border-2 border-primary/40 deskterior-shadow relative overflow-hidden dark:bg-[#1a1a1a] dark:text-white bg-white text-charcoal">
+<div class="absolute top-0 left-0 w-full h-1 bg-primary"></div>
+<span id="main-secs" class="text-4xl md:text-5xl font-bold mb-2 text-primary">00</span>
+<span class="text-[10px] uppercase tracking-[0.4em] font-semibold text-primary overflow-visible">Seconds</span>
+</div>
+</div>
+
+<!-- Saved Targets List -->
+<div id="dday-list" class="flex flex-wrap justify-center gap-3 mt-8 min-h-[40px]">
+<!-- Chips will go here -->
+</div>
+
+</div>
+</div>
+
+<!-- Customization Panel (Bottom Right) -->
+<div class="fixed bottom-6 right-6 z-50">
+<div class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md p-3 rounded-xl deskterior-shadow border border-slate-200 dark:border-slate-800 flex flex-col gap-3">
+<button id="bg-toggle" class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Toggle Background Image">
+<span class="material-icons">image</span>
+</button>
+<button id="theme-toggle" class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Toggle Light/Dark Theme">
+<span class="material-icons">light_mode</span>
+</button>
+</div>
+</div>
+
+<!-- Background Image Preview -->
+<div id="bg-image" class="fixed top-0 left-0 w-full h-full -z-10 opacity-10 transition-opacity duration-500 hidden">
+<img class="w-full h-full object-cover" data-alt="Minimalist clean workspace desk with lamp" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhkXtWcksi8JfPRUjam95b3hr8oZMLKWTlBJexZuC8gfwO-CE0p6FUnmffObW4yu2P9ARYFvWXWuJ-K9RCKxTqkeKMVod1QcJDMvWuNAI9-f4dTDI6e0bNYq1kcK2eaMRsW9NCC9ys470Lb9UvE1R6zsV9CYoAKeqV6QU1iJqYccDp4AZQdLKm41qdKGWmupvJu5Rl28hbMJHyhcQhRHlHNLBWIyDqrUWvvM82M7_cRwikJc8KU5faLnzkrn3N9QqPVIJPye0IrjbE"/>
+</div>
+
+<!-- Quote/Footer -->
+<div class="fixed bottom-8 left-1/2 -translate-x-1/2 text-center w-full px-4 pointer-events-none">
+<p class="text-slate-400 dark:text-slate-500 text-sm font-medium italic">"Small progress is still progress."</p>
+</div>
+
+<script>
+    const ddayForm = document.getElementById('dday-form');
+    const ddayListContainer = document.getElementById('dday-list');
+    
+    const mainEventTitle = document.getElementById('current-event-title');
+    const statusLabel = document.getElementById('status-label');
+    const mainDays = document.getElementById('main-days');
+    const mainHours = document.getElementById('main-hours');
+    const mainMins = document.getElementById('main-mins');
+    const mainSecs = document.getElementById('main-secs');
+
+    let ddays = JSON.parse(localStorage.getItem('antiGravityDdays_v3')) || [];
+    let focusedDdayId = localStorage.getItem('focusedDdayId_v3') || null;
+
+    function saveDdays() {
+        localStorage.setItem('antiGravityDdays_v3', JSON.stringify(ddays));
+        if (focusedDdayId) {
+            localStorage.setItem('focusedDdayId_v3', focusedDdayId);
+        } else {
+            localStorage.removeItem('focusedDdayId_v3');
+        }
+    }
+
+    ddayForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('event-name').value;
+        const datetimeStr = document.getElementById('event-datetime').value;
+
+        const targetTimeMs = new Date(datetimeStr).getTime();
+        
+        if (isNaN(targetTimeMs)) {
+            alert("유효한 날짜를 선택해주세요.");
+            return;
+        }
+
+        const newId = Date.now().toString();
+        const newDday = {
+            id: newId,
+            name,
+            targetTimeMs,
+        };
+
+        ddays.push(newDday);
+        
+        ddays.sort((a,b) => a.targetTimeMs - b.targetTimeMs);
+        if (ddays.length === 1 || !focusedDdayId) {
+            focusedDdayId = newDday.id;
+        }
+
+        saveDdays();
+        
+        document.getElementById('event-name').value = '';
+        renderDdays();
+    });
+
+    window.deleteDday = function(id) {
+        if(event) event.stopPropagation();
+        ddays = ddays.filter(d => d.id !== id);
+        
+        if (focusedDdayId === id) {
+            focusedDdayId = ddays.length > 0 ? ddays[0].id : null;
+        }
+        
+        saveDdays();
+        renderDdays();
+    };
+
+    window.focusDday = function(id) {
+        focusedDdayId = id;
+        saveDdays();
+        renderDdays();
+    };
+
+    function renderDdays() {
+        ddayListContainer.innerHTML = '';
+        
+        if (ddays.length === 0) {
+            mainEventTitle.innerText = 'No Events Set';
+            statusLabel.innerText = 'D-DAY COUNTER';
+            mainDays.innerText = '00';
+            mainHours.innerText = '00';
+            mainMins.innerText = '00';
+            mainSecs.innerText = '00';
+            return;
+        }
+
+        ddays.forEach((dday) => {
+            const isFocused = dday.id === focusedDdayId;
+            
+            const borderClass = isFocused ? 'border-primary ring-2 ring-primary/50' : 'border-slate-200 dark:border-slate-700 hover:border-primary/50';
+
+            const chipHTML = `
+                <div onclick="focusDday('${dday.id}')" class="cursor-pointer flex items-center gap-2 bg-white dark:bg-slate-800 px-4 py-2 rounded-full border ${borderClass} transition-all shadow-sm">
+                    <span class="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[150px]">${dday.name}</span>
+                    <button onclick="deleteDday('${dday.id}')" class="w-5 h-5 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-700 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/30 dark:hover:text-red-400 text-slate-400 transition-colors">
+                        <span class="material-icons text-[12px]">close</span>
+                    </button>
+                </div>
+            `;
+            
+            const item = document.createElement('div');
+            item.innerHTML = chipHTML.trim();
+            ddayListContainer.appendChild(item.firstChild);
+        });
+
+        updateMainDisplay();
+    }
+
+    function updateMainDisplay() {
+        if (!focusedDdayId || ddays.length === 0) return;
+        
+        const focused = ddays.find(d => d.id === focusedDdayId) || ddays[0];
+        
+        const now = new Date().getTime();
+        const distance = focused.targetTimeMs - now;
+        const past = distance < 0;
+        const absDistance = Math.abs(distance);
+        
+        const days = Math.floor(absDistance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((absDistance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((absDistance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((absDistance % (1000 * 60)) / 1000);
+
+        mainEventTitle.innerText = focused.name;
+
+        mainDays.innerText = String(days).padStart(2, '0');
+        mainHours.innerText = String(hours).padStart(2, '0');
+        mainMins.innerText = String(minutes).padStart(2, '0');
+        mainSecs.innerText = String(seconds).padStart(2, '0');
+
+        if (past) {
+            statusLabel.innerText = `TIME ELAPSED (D+${days})`;
+            statusLabel.classList.add('text-red-500');
+            statusLabel.classList.remove('text-primary');
+        } else if (days === 0 && distance < 86400000) {
+            statusLabel.innerText = 'D-DAY';
+            statusLabel.classList.remove('text-red-500');
+            statusLabel.classList.add('text-primary');
+        } else {
+            statusLabel.innerText = `UPCOMING (D-${days})`;
+            statusLabel.classList.remove('text-red-500');
+            statusLabel.classList.add('text-primary');
+        }
+    }
+
+    // Timer Loop
+    function timerLoop() {
+        updateMainDisplay();
+        requestAnimationFrame(timerLoop);
+    }
+
+    // Theme logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const flatpickrDarkTheme = document.getElementById('flatpickr-dark-theme');
+    document.documentElement.classList.add('dark'); // Set default to dark
+    flatpickrDarkTheme.disabled = false; // default dark flatpickr
+
+    themeToggleBtn.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const icon = themeToggleBtn.querySelector('.material-icons');
+        if(document.documentElement.classList.contains('dark')) {
+            icon.innerText = 'light_mode';
+            document.body.classList.replace('light', 'dark'); // extra fallback
+            flatpickrDarkTheme.disabled = false;
+        } else {
+            icon.innerText = 'dark_mode';
+            document.body.classList.replace('dark', 'light');
+            flatpickrDarkTheme.disabled = true;
+        }
+    });
+
+    // Background logic
+    const bgToggleBtn = document.getElementById('bg-toggle');
+    const bgImage = document.getElementById('bg-image');
+    bgToggleBtn.addEventListener('click', () => {
+        if(bgImage.classList.contains('hidden')) {
+            bgImage.classList.remove('hidden');
+        } else {
+            bgImage.classList.add('hidden');
+        }
+    });
+
+    // Init Flatpickr
+    flatpickr("#event-datetime", {
+        enableTime: true,
+        dateFormat: "Y-m-dTH:i",
+        time_24hr: true,
+        minuteIncrement: 1,
+        locale: "ko"
+    });
+
+    // Init
+    renderDdays();
+    timerLoop();
+</script>
+</body>
+</html>
